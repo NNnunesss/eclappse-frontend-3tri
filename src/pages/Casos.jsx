@@ -1,3 +1,5 @@
+import Menu from '../assets/components/Menu.jsx'
+
 function Casos() {
   return (
     <div>

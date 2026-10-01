@@ -1,7 +1,18 @@
+
+
 export default function Home() {
-    return (
-        <div style={{ padding: '20px', backgroundColor: '#fff', color: '#000' }}>
-            <h1>Página Home funcionando!</h1>
-        </div>
-    )
+  return (
+    <div>
+      {/* Barra de navegação do Bootstrap no topo */}
+      <Menu />
+
+      {/* Conteúdo da sua página */}
+      <div className="container mt-4">
+        <h1>Página Home</h1>
+        <p>A Página está Funcionando!</p>
+      </div>
+    </div>
+  )
 }
+
+import Menu from '../assets/components/Menu.jsx'
