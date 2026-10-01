@@ -7,7 +7,7 @@ export default function Home() {
       <Menu />
 
       {/* Conteúdo da sua página */}
-      <div className="container mt-4">
+      <div className="container">
         <h1>Página Home</h1>
         <p>A Página está Funcionando!</p>
       </div>

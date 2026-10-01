@@ -7,7 +7,7 @@ import QuemSomos from './pages/QuemSomos'
 import Cadastro from './pages/Cadastro'
 import Login from './pages/Login'
 
-import './App.css'
+// import './App.css'
 
 function App() {
   return (
