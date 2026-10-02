@@ -8,6 +8,7 @@ export default function Home() {
 
       {/* Conteúdo da sua página */}
       <div className="container">
+
         <h1>Página Home</h1>
         <p>A Página está Funcionando!</p>
       </div>
