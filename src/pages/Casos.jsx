@@ -1,10 +1,10 @@
-import Menu from '../assets/components/Menu.jsx'
+import Menu from "../assets/components/Menu"
 
-function Casos() {
+const Casos = () => {
   return (
-    <div>
+    <div className="container">
       <Menu />
-      <h1>Página de Casos</h1>
+      <p>Casos</p>
     </div>
   )
 }

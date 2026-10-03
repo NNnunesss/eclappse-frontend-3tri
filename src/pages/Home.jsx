@@ -1,19 +1,12 @@
+import Menu from "../assets/components/Menu"
 
-
-export default function Home() {
+const Home = () => {
   return (
-    <div>
-      {/* Barra de navegação do Bootstrap no topo */}
+    <div className="container">
       <Menu />
-
-      {/* Conteúdo da sua página */}
-      <div className="container">
-
-        <h1>Página Home</h1>
-        <p>A Página está Funcionando!</p>
-      </div>
+      <p>Home</p>
     </div>
   )
 }
 
-import Menu from '../assets/components/Menu.jsx'
+export default Home

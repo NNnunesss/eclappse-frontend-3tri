@@ -3,7 +3,7 @@ import Menu from "../assets/components/Menu"
 function Cadastro() {
   return (
    
-    <div>
+    <div className="container">
  <Menu />
       <h1>Página de Cadastro</h1>
     </div>
