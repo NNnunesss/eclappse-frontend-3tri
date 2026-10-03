@@ -1,47 +1,88 @@
+
 import style from './Menu.module.css'
-import { Link } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
+import logo from '../images/logo.png'
 
 const Menu = () => {
+
   return (
-    <nav className={`navbar navbar-expand-lg navbar-light bg-light p-2 rounded shadow-sm w-100 ${style.menu}`}>
-      <Link className={`navbar-brand ${style.logo}`} to="/">
-        Home
-      </Link>
-      {/* Botão Hamburguer para telas menores */}
-      <button
-        className="navbar-toggler"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        <span className="navbar-toggler-icon"></span>
-      </button>
-      <div className="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul className="navbar-nav me-auto">
-          <li className="nav-item">
-            <Link className={`nav-link ${style.itemMenu}`} to="/casos">
-              Casos
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link className={`nav-link ${style.itemMenu}`} to="/quem-somos">
-              Quem Somos
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link className={`nav-link ${style.itemMenu}`} to="/cadastro">
-              Cadastro
-            </Link>
-          </li>
-        </ul>
-        <Link to="/login" className="btn btn-primary">
-          Login
+
+    <nav className={style.menu}>
+
+      <div className={style.menuContainer}>
+
+        <Link
+          to="/"
+          className={style.logoArea}
+        >
+
+          <img
+            src={logo}
+            alt="Eclappse"
+            className={style.logoImage}
+          />
+
+          <span className={style.logoText}>
+            Eclappse
+          </span>
+
         </Link>
+
+
+        <div className={style.links}>
+
+          <NavLink
+            to="/"
+            className={({ isActive }) =>
+              `${style.link} ${isActive ? style.active : ''}`
+            }
+          >
+            Início
+          </NavLink>
+
+          <NavLink
+            to="/casos"
+            className={({ isActive }) =>
+              `${style.link} ${isActive ? style.active : ''}`
+            }
+          >
+            Casos
+          </NavLink>
+
+          <NavLink
+            to="/quem-somos"
+            className={({ isActive }) =>
+              `${style.link} ${isActive ? style.active : ''}`
+            }
+          >
+            Quem somos
+          </NavLink>
+
+        </div>
+
+
+        <div className={style.actions}>
+
+          <Link
+            to="/login"
+            className={style.login}
+          >
+            Entrar
+          </Link>
+
+          <Link
+            to="/cadastro"
+            className={style.register}
+          >
+            Criar conta
+          </Link>
+
+        </div>
+
       </div>
+
     </nav>
+
   )
 }
 
