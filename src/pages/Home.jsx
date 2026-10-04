@@ -1,8 +1,33 @@
+import { useEffect, useState } from 'react'
 import Menu from '../assets/components/Menu'
 import Footer from '../assets/components/Footer'
 import style from './Pages.module.css'
+import { listarCasos, listarUsuarios } from '../services/api'
 
 const Home = () => {
+  const [totais, setTotais] = useState(null)
+
+  useEffect(() => {
+    let ativo = true
+    Promise.all([listarCasos(), listarUsuarios()])
+      .then(([casos, usuarios]) => {
+        if (!ativo) return
+        setTotais({
+          casos: casos.length,
+          ativos: casos.filter((caso) => caso.statusCaso === 'ATIVO').length,
+          pessoas: usuarios.length,
+        })
+      })
+      .catch(() => {
+        if (ativo) setTotais({ casos: 0, ativos: 0, pessoas: 0 })
+      })
+    return () => {
+      ativo = false
+    }
+  }, [])
+
+  const valor = (numero) => (totais ? numero : '...')
+
   return (
     <div className={style.page}>
       <Menu />
@@ -45,18 +70,18 @@ const Home = () => {
         {/* DADOS / ESTATÍSTICAS */}
         <section className={style.stats}>
           <div className={style.stat}>
-            <strong>128+</strong>
+            <strong>{valor(totais?.casos)}</strong>
             <span>casos registrados</span>
           </div>
 
           <div className={style.stat}>
-            <strong>37</strong>
-            <span>reencontros realizados</span>
+            <strong>{valor(totais?.ativos)}</strong>
+            <span>casos ativos</span>
           </div>
 
           <div className={style.stat}>
-            <strong>84</strong>
-            <span>famílias alcançadas</span>
+            <strong>{valor(totais?.pessoas)}</strong>
+            <span>pessoas cadastradas</span>
           </div>
         </section>
 

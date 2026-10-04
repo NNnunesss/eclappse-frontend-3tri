@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom'
 import style from './Footer.module.css'
+import { usuarioLogado } from '../../services/api'
 
 const Footer = () => {
+  const usuario = usuarioLogado()
 
   return (
 
@@ -41,6 +43,12 @@ const Footer = () => {
             <Link to="/casos">
               Casos
             </Link>
+
+            {usuario && (
+              <Link to="/gerenciar">
+                Gerenciar
+              </Link>
+            )}
 
             <Link to="/quem-somos">
               Quem somos

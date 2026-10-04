@@ -1,9 +1,20 @@
 
+import { useState } from 'react'
 import style from './Menu.module.css'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import logo from '../images/logo.png'
+import { encerrarSessao, usuarioLogado } from '../../services/api'
 
 const Menu = () => {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [usuario, setUsuario] = useState(() => usuarioLogado())
+
+  function sair() {
+    encerrarSessao()
+    setUsuario(null)
+    if (location.pathname === '/gerenciar') navigate('/login')
+  }
 
   return (
 
@@ -49,6 +60,17 @@ const Menu = () => {
             Casos
           </NavLink>
 
+          {usuario && (
+            <NavLink
+              to="/gerenciar"
+              className={({ isActive }) =>
+                `${style.link} ${isActive ? style.active : ''}`
+              }
+            >
+              Gerenciar
+            </NavLink>
+          )}
+
           <NavLink
             to="/quem-somos"
             className={({ isActive }) =>
@@ -63,19 +85,35 @@ const Menu = () => {
 
         <div className={style.actions}>
 
-          <Link
-            to="/login"
-            className={style.login}
-          >
-            Entrar
-          </Link>
+          {usuario ? (
+            <span className={style.login}>
+              {usuario.nome?.split(' ')[0]}
+            </span>
+          ) : (
+            <Link
+              to="/login"
+              className={style.login}
+            >
+              Entrar
+            </Link>
+          )}
 
-          <Link
-            to="/cadastro"
-            className={style.register}
-          >
-            Criar conta
-          </Link>
+          {usuario ? (
+            <button
+              type="button"
+              className={style.register}
+              onClick={sair}
+            >
+              Sair
+            </button>
+          ) : (
+            <Link
+              to="/cadastro"
+              className={style.register}
+            >
+              Criar conta
+            </Link>
+          )}
 
         </div>
 

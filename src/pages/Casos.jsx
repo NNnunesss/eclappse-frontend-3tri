@@ -1,48 +1,82 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Menu from '../assets/components/Menu'
 import Footer from '../assets/components/Footer'
 import style from './Pages.module.css'
+import { listarCasos } from '../services/api'
+
+const STATUS_LABEL = {
+  ATIVO: 'Ativo',
+  ENCERRADO: 'Encerrado',
+  ARQUIVADO: 'Arquivado',
+  SOLICITADO_EXCLUSAO: 'Exclusão solicitada',
+}
+
+function rotuloStatus(status) {
+  return STATUS_LABEL[status] || status || 'Sem status'
+}
+
+function formatarData(iso) {
+  if (!iso) return 'Data não informada'
+  const [ano, mes, dia] = iso.slice(0, 10).split('-')
+  if (!ano || !mes || !dia) return iso
+  return `${dia}/${mes}/${ano}`
+}
+
+function calcularIdade(dataNascimento) {
+  if (!dataNascimento) return null
+  const nascimento = new Date(`${dataNascimento}T00:00:00`)
+  if (Number.isNaN(nascimento.getTime())) return null
+  const hoje = new Date()
+  let idade = hoje.getFullYear() - nascimento.getFullYear()
+  const mes = hoje.getMonth() - nascimento.getMonth()
+  if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) idade -= 1
+  return idade >= 0 ? idade : null
+}
+
+function fotoSrc(foto) {
+  if (!foto || typeof foto !== 'string') return null
+  return `data:image/jpeg;base64,${foto}`
+}
 
 const Casos = () => {
   const [pesquisa, setPesquisa] = useState('')
   const [local, setLocal] = useState('')
   const [status, setStatus] = useState('')
+  const [arrayCasos, setArrayCasos] = useState([])
+  const [carregando, setCarregando] = useState(true)
+  const [erro, setErro] = useState('')
 
-  const arrayCasos = [
-    {
-      id: 1,
-      nome: 'João Silva',
-      idade: 17,
-      local: 'Barueri - SP',
-      data: '12/09/2026',
-      status: 'Desaparecido',
-      descricao:
-        'Cabelos castanhos, olhos castanhos e aproximadamente 1,70m de altura.',
-      foto: null
-    },
-    {
-      id: 2,
-      nome: 'Maria Souza',
-      idade: 21,
-      local: 'Carapicuíba - SP',
-      data: '18/09/2026',
-      status: 'Desaparecida',
-      descricao:
-        'Cabelos pretos e longos, olhos castanhos e aproximadamente 1,65m de altura.',
-      foto: null
-    },
-    {
-      id: 3,
-      nome: 'Pedro Santos',
-      idade: 24,
-      local: 'Osasco - SP',
-      data: '22/09/2026',
-      status: 'Desaparecido',
-      descricao:
-        'Cabelos pretos curtos, olhos castanhos e aproximadamente 1,75m de altura.',
-      foto: null
+  useEffect(() => {
+    let ativo = true
+    listarCasos()
+      .then((casos) => {
+        if (!ativo) return
+        setArrayCasos(
+          casos.map((caso) => ({
+            id: caso.id,
+            nome: caso.nomeDesaparecido,
+            idade: calcularIdade(caso.dataNascimento),
+            local: caso.localDesaparecimento,
+            data: formatarData(caso.dataDesaparecimento),
+            status: caso.statusCaso,
+            descricao:
+              caso.caracteristicasFisicas ||
+              caso.circunstancias ||
+              'Sem descrição informada.',
+            foto: fotoSrc(caso.foto),
+          })),
+        )
+      })
+      .catch(() => {
+        if (ativo) setErro('Não foi possível carregar os casos.')
+      })
+      .finally(() => {
+        if (ativo) setCarregando(false)
+      })
+    return () => {
+      ativo = false
     }
-  ]
+  }, [])
 
   // Extrai lista única de locais
   const locais = [...new Set(arrayCasos.map((caso) => caso.local))]
@@ -110,8 +144,11 @@ const Casos = () => {
             onChange={(e) => setStatus(e.target.value)}
           >
             <option value="">Todos os status</option>
-            <option value="Desaparecido">Desaparecidos</option>
-            <option value="Desaparecida">Desaparecidas</option>
+            {Object.entries(STATUS_LABEL).map(([valor, rotulo]) => (
+              <option key={valor} value={valor}>
+                {rotulo}
+              </option>
+            ))}
           </select>
 
           <button
@@ -129,7 +166,16 @@ const Casos = () => {
 
         {/* LISTA DE CASOS */}
         <section className={style.caseList}>
-          {casosFiltrados.length > 0 ? (
+          {carregando ? (
+            <div className={style.emptyCases}>
+              <h2>Carregando casos...</h2>
+            </div>
+          ) : erro ? (
+            <div className={style.emptyCases}>
+              <h2>{erro}</h2>
+              <p>Confira se o backend está em execução na porta 8080.</p>
+            </div>
+          ) : casosFiltrados.length > 0 ? (
             casosFiltrados.map((caso) => (
               <article className={style.caseCard} key={caso.id}>
                 {/* FOTO / AVATAR */}
@@ -146,7 +192,7 @@ const Casos = () => {
 
                 {/* DETALHES DO CASO */}
                 <div className={style.caseBody}>
-                  <span className={style.caseStatus}>{caso.status}</span>
+                  <span className={style.caseStatus}>{rotuloStatus(caso.status)}</span>
                   <h2>{caso.nome}</h2>
                   <p className={style.caseDescription}>{caso.descricao}</p>
 
@@ -155,7 +201,8 @@ const Casos = () => {
                       <b>📍</b> {caso.local}
                     </span>
                     <span>
-                      <b>📅</b> {caso.data} ({caso.idade} anos)
+                      <b>📅</b> {caso.data}
+                      {caso.idade != null ? ` (${caso.idade} anos)` : ''}
                     </span>
                   </div>
                 </div>

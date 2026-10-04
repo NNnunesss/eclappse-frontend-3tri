@@ -146,7 +146,11 @@
 .register {
   padding: 10px 15px;
 
+  border: none;
   border-radius: 8px;
+
+  font-family: inherit;
+  cursor: pointer;
 
   background: #4c7557;
 
