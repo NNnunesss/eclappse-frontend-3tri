@@ -1,27 +1,34 @@
 import { useEffect, useState } from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+  faCalendarDays,
+  faLocationDot,
+  faMagnifyingGlass,
+  faUser,
+} from '@fortawesome/free-solid-svg-icons'
 import Menu from '../assets/components/Menu'
 import Footer from '../assets/components/Footer'
 import style from './Pages.module.css'
 import { listarCasos } from '../services/api'
-
+ 
 const STATUS_LABEL = {
   ATIVO: 'Ativo',
   ENCERRADO: 'Encerrado',
   ARQUIVADO: 'Arquivado',
   SOLICITADO_EXCLUSAO: 'Exclusão solicitada',
 }
-
+ 
 function rotuloStatus(status) {
   return STATUS_LABEL[status] || status || 'Sem status'
 }
-
+ 
 function formatarData(iso) {
   if (!iso) return 'Data não informada'
   const [ano, mes, dia] = iso.slice(0, 10).split('-')
   if (!ano || !mes || !dia) return iso
   return `${dia}/${mes}/${ano}`
 }
-
+ 
 function calcularIdade(dataNascimento) {
   if (!dataNascimento) return null
   const nascimento = new Date(`${dataNascimento}T00:00:00`)
@@ -32,12 +39,12 @@ function calcularIdade(dataNascimento) {
   if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) idade -= 1
   return idade >= 0 ? idade : null
 }
-
+ 
 function fotoSrc(foto) {
   if (!foto || typeof foto !== 'string') return null
   return `data:image/jpeg;base64,${foto}`
 }
-
+ 
 const Casos = () => {
   const [pesquisa, setPesquisa] = useState('')
   const [local, setLocal] = useState('')
@@ -45,7 +52,7 @@ const Casos = () => {
   const [arrayCasos, setArrayCasos] = useState([])
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState('')
-
+ 
   useEffect(() => {
     let ativo = true
     listarCasos()
@@ -77,27 +84,27 @@ const Casos = () => {
       ativo = false
     }
   }, [])
-
+ 
   // Extrai lista única de locais
   const locais = [...new Set(arrayCasos.map((caso) => caso.local))]
-
+ 
   // Aplica os filtros de nome, local e status
   const casosFiltrados = arrayCasos.filter((caso) => {
     const correspondeNome = caso.nome
       .toLowerCase()
       .includes(pesquisa.toLowerCase())
-
+ 
     const correspondeLocal = local === '' || caso.local === local
-
+ 
     const correspondeStatus = status === '' || caso.status === status
-
+ 
     return correspondeNome && correspondeLocal && correspondeStatus
   })
-
+ 
   return (
     <div className={style.page}>
       <Menu />
-
+ 
       <main className={style.content}>
         {/* CABEÇALHO */}
         <section className={style.pageHeader}>
@@ -109,16 +116,16 @@ const Casos = () => {
               ajudar a trazer alguém de volta.
             </p>
           </div>
-
+ 
           <span className={style.caseCount}>
             {casosFiltrados.length} {casosFiltrados.length === 1 ? 'caso' : 'casos'}
           </span>
         </section>
-
+ 
         {/* FILTROS */}
         <section className={style.filters}>
           <div className={style.searchField}>
-            <span>⌕</span>
+            <span><FontAwesomeIcon icon={faMagnifyingGlass} /></span>
             <input
               type="text"
               placeholder="Pesquisar por nome..."
@@ -126,7 +133,7 @@ const Casos = () => {
               onChange={(e) => setPesquisa(e.target.value)}
             />
           </div>
-
+ 
           <select
             value={local}
             onChange={(e) => setLocal(e.target.value)}
@@ -138,7 +145,7 @@ const Casos = () => {
               </option>
             ))}
           </select>
-
+ 
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
@@ -150,7 +157,7 @@ const Casos = () => {
               </option>
             ))}
           </select>
-
+ 
           <button
             type="button"
             className={style.clearFilters}
@@ -163,7 +170,7 @@ const Casos = () => {
             Limpar
           </button>
         </section>
-
+ 
         {/* LISTA DE CASOS */}
         <section className={style.caseList}>
           {carregando ? (
@@ -184,35 +191,37 @@ const Casos = () => {
                     <img src={caso.foto} alt={`Foto de ${caso.nome}`} />
                   ) : (
                     <div className={style.noPhoto}>
-                      <span style={{ fontSize: '1.2rem' }}>👤</span>
+                      <span style={{ fontSize: '1.2rem' }}>
+                        <FontAwesomeIcon icon={faUser} />
+                      </span>
                       <small>Sem foto</small>
                     </div>
                   )}
                 </div>
-
+ 
                 {/* DETALHES DO CASO */}
                 <div className={style.caseBody}>
                   <span className={style.caseStatus}>{rotuloStatus(caso.status)}</span>
                   <h2>{caso.nome}</h2>
                   <p className={style.caseDescription}>{caso.descricao}</p>
-
+ 
                   <div className={style.caseMeta}>
                     <span>
-                      <b>📍</b> {caso.local}
+                      <b><FontAwesomeIcon icon={faLocationDot} /></b> {caso.local}
                     </span>
                     <span>
-                      <b>📅</b> {caso.data}
+                      <b><FontAwesomeIcon icon={faCalendarDays} /></b> {caso.data}
                       {caso.idade != null ? ` (${caso.idade} anos)` : ''}
                     </span>
                   </div>
                 </div>
-
+ 
                 {/* BOTÕES DE AÇÃO */}
                 <div className={style.caseActions}>
                   <button type="button" className={style.informationButton}>
                     Tenho informações
                   </button>
-
+ 
                   <button type="button" className={style.detailsButton}>
                     Ver detalhes
                   </button>
@@ -222,14 +231,14 @@ const Casos = () => {
           ) : (
             <div className={style.emptyCases}>
               <span style={{ fontSize: '2rem', display: 'block', marginBottom: '8px' }}>
-                🔍
+                <FontAwesomeIcon icon={faMagnifyingGlass} />
               </span>
               <h2>Nenhum caso encontrado</h2>
               <p>Tente alterar os filtros ou realizar outra pesquisa.</p>
             </div>
           )}
         </section>
-
+ 
         {/* CHAMADA / AJUDA */}
         <section className={style.caseHelp}>
           <div>
@@ -240,14 +249,14 @@ const Casos = () => {
               caso, sua contribuição pode ser fundamental.
             </p>
           </div>
-
+ 
           <a href="#/login">Tenho informações</a>
         </section>
       </main>
-
+ 
       <Footer />
     </div>
   )
 }
-
+ 
 export default Casos
